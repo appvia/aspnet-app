@@ -1,0 +1,26 @@
+name: Create and test a Docker image
+
+on:
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build-and-test-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start containers
+        run: docker compose up --build --detach
+
+      - name: Run test
+        run: |
+          docker ps
+          for i in {1..10}; do curl -m 10 -s -L localhost:8080/swagger | grep 'WebApi' && echo "[Attempt $i] Endpoint returned expected response." && exit 0 || echo "[Attempt $i] Endpoint not returning expected response, retrying in 5 seconds.." && sleep 5; done; exit 1
+
+      - name: Stop containers
+        run: docker compose down
