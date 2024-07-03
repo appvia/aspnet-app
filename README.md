@@ -12,7 +12,7 @@ This project is a simple web api built using ASP.NET, and connecting to an SQL S
 ## Installation
 
 1. Clone the repository: `git clone https://github.com/appvia/aspnet-app.git`
-2. Run docker compose up --build --detach
+2. Run `docker compose up --build --detach`
 
 ## Usage
 
