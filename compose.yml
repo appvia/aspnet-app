@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web-api:
+    container_name: web-api
+    build: WebApi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MSSQL_HOSTNAME=sqlserver
+      - MSSQL_PORT=1433
+      - MSSQL_DBNAME=MainDemo
+      - MSSQL_USERNAME=sa
+      - MSSQL_PASSWORD=Password1*
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password1*
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Password1* -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s     
+
+volumes:
+  mssql-data:
